@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+   <meta charset="UTF-8">
+   <title>Plaintext Editor</title>
+   <style>
+       * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+           font-family: Arial, sans-serif;
+       }
+
+
+       body {
+           display: flex;
+           height: 100vh;
+           background-color: #1e1e1e;
+           color: #dcdcdc;
+       }
+
+
+       .sidebar {
+           width: 250px;
+           background-color: #252526;
+           display: flex;
+           flex-direction: column;
+           border-right: 1px solid #333;
+       }
+
+
+       .sidebar-header {
+           padding: 10px;
+           background-color: #333;
+           text-align: center;
+           font-weight: bold;
+           border-bottom: 1px solid #444;
+       }
+
+
+       .file-list {
+           flex: 1;
+           overflow-y: auto;
+       }
+
+
+       .file-item {
+           padding: 10px;
+           cursor: pointer;
+           border-bottom: 1px solid #333;
+           transition: background-color 0.2s;
+       }
+
+
+       .file-item:hover {
+           background-color: #3e3e3e;
+       }
+
+
+       .file-item.active {
+           background-color: #007acc;
+           color: white;
+       }
+
+
+       .new-file-btn {
+           padding: 10px;
+           background-color: #007acc;
+           color: white;
+           text-align: center;
+           cursor: pointer;
+           border: none;
+           border-top: 1px solid #444;
+       }
+
+
+       .editor-container {
+           flex: 1;
+           display: flex;
+           flex-direction: column;
+       }
+
+
+       .editor-header {
+           padding: 10px;
+           background-color: #333;
+           border-bottom: 1px solid #444;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+       }
+
+
+       .editor-header button {
+           background-color: #007acc;
+           color: white;
+           border: none;
+           padding: 5px 10px;
+           border-radius: 3px;
+           cursor: pointer;
+       }
+
+
+       .editor-header button:hover {
+           background-color: #005f99;
+       }
+
+
+       .editor {
+           flex: 1;
+           background-color: #1e1e1e;
+           color: #dcdcdc;
+           padding: 10px;
+           font-family: monospace;
+           font-size: 14px;
+           border: none;
+           resize: none;
+           outline: none;
+       }
+
+
+       .preview-container {
+           display: none;
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background-color: rgba(0, 0, 0, 0.8);
+           z-index: 1000;
+           display: flex;
+           flex-direction: column;
+       }
+
+
+       .preview {
+           flex: 1;
+           background-color: white;
+           border: none;
+       }
+
+
+       .close-preview {
+           background-color: #ff5f5f;
+           color: white;
+           border: none;
+           padding: 5px 10px;
+           margin: 10px;
+           border-radius: 3px;
+           align-self: flex-end;
+           cursor: pointer;
+       }
+
+
+       .close-preview:hover {
+           background-color: #e04e4e;
+       }
+   </style>
+</head>
+
+
+<body>
+   <div class="sidebar">
+       <div class="sidebar-header">Files</div>
+       <div class="file-list" id="file-list"></div>
+       <button class="new-file-btn" onclick="createNewFile()">+ New Code</button>
+   </div>
+   <div class="editor-container">
+       <div class="editor-header">
+           <span id="current-file-name" ondblclick="renameFile()">Untitled</span>
+           <button onclick="openPreview()">View</button>
+       </div>
+       <textarea id="editor" class="editor" placeholder="Type your code here..."></textarea>
+   </div>
+   <div class="preview-container" id="preview-container">
+       <button class="close-preview" onclick="closePreview()">Close</button>
+       <iframe id="preview" class="preview"></iframe>
+   </div>
+
+
+   <script>
+       const fileList = document.getElementById('file-list');
+       const editor = document.getElementById('editor');
+       const previewContainer = document.getElementById('preview-container');
+       const preview = document.getElementById('preview');
+       const currentFileName = document.getElementById('current-file-name');
+
+
+       let files = JSON.parse(localStorage.getItem('files')) || [];
+       let currentFileIndex = null;
+
+
+       function saveFilesToStorage() {
+           localStorage.setItem('files', JSON.stringify(files));
+       }
+
+
+       function renderFileList() {
+           fileList.innerHTML = '';
+           files.forEach((file, index) => {
+               const fileItem = document.createElement('div');
+               fileItem.className = 'file-item' + (index === currentFileIndex ? ' active' : '');
+               fileItem.textContent = file.name;
+               fileItem.ondblclick = () => renameFile(index);
+               fileItem.onclick = () => openFile(index);
+               fileList.appendChild(fileItem);
+           });
+       }
+
+
+       function createNewFile() {
+           const newFileName = `Untitled-${files.length + 1}`;
+           files.push({ name: newFileName, content: '' });
+           saveFilesToStorage();
+           renderFileList();
+           openFile(files.length - 1);
+       }
+
+
+       function openFile(index) {
+           currentFileIndex = index;
+           const file = files[index];
+           currentFileName.textContent = file.name;
+           editor.value = file.content;
+           renderFileList();
+       }
+
+
+       function saveCurrentFile() {
+           if (currentFileIndex !== null) {
+               files[currentFileIndex].content = editor.value;
+               saveFilesToStorage();
+           }
+       }
+
+
+       function renameFile(index) {
+           const newName = prompt('Enter a new name for the file:', files[index].name);
+           if (newName) {
+               files[index].name = newName;
+               saveFilesToStorage();
+               renderFileList();
+               if (index === currentFileIndex) {
+                   currentFileName.textContent = newName;
+               }
+           }
+       }
+
+
+       function parsePlaintext(code) {
+           const tagShortcuts = {
+               p: 'p', h1: 'h1', h2: 'h2', h3: 'h3',
+               link: 'a', input: 'input', img: 'img',
+               btn: 'button', dv: 'div', sp: 'span',
+               br: 'br', hr: 'hr', ul: 'ul', ol: 'ol',
+               li: 'li', table: 'table', tr: 'tr', th: 'th',
+               style: 'style', script: 'script'
+           };
+
+
+           let styles = [];
+           let scripts = [];
+           let html = "";
+
+
+           function parseArgs(argStr) {
+               const args = [];
+               let current = '';
+               let inQuotes = false;
+               let openParens = 0;
+
+
+               for (let i = 0; i < argStr.length; i++) {
+                   const char = argStr[i];
+                   if (char === '"') {
+                       inQuotes = !inQuotes;
+                       current += char;
+                   } else if (!inQuotes && char === '(') {
+                       openParens++;
+                       current += char;
+                   } else if (!inQuotes && char === ')') {
+                       openParens--;
+                       current += char;
+                   } else if (char === ',' && !inQuotes && openParens === 0) {
+                       args.push(current.trim());
+                       current = '';
+                   } else {
+                       current += char;
+                   }
+               }
+               if (current) args.push(current.trim());
+               return args.map(arg => /^[\w-]+\(/.test(arg) ? parseLine(arg) : arg.replace(/^"(.*)"$/, '$1'));
+           }
+
+
+           function parseLine(line) {
+               const match = line.match(/^([\.#\w-]+)\((.*)\)$/);
+               if (!match) return line;
+
+
+               let tag = match[1].startsWith('.') ? 'div' : match[1]; // If class, use div
+               const className = match[1].startsWith('.') ? match[1].slice(1) : null;
+               const args = parseArgs(match[2]);
+
+
+               // Create class if specified
+               let tagHtml = className ? `<${tag} class="${className}">` : `<${tag}>`;
+
+
+               if (tag === 'style') {
+                   styles.push(args.join(' '));
+                   return '';
+               }
+
+
+               if (tag === 'script') {
+                   scripts.push(args.join(' '));
+                   return '';
+               }
+
+
+               if (['br', 'hr', 'img', 'input'].includes(tag)) {
+                   return `<${tag}>`;
+               }
+
+
+               if (tag === 'a') return `<a href="${args[0]}">${args.slice(1).join(' ')}</a>`;
+               return `${tagHtml}${args.join(' ')}</${tag}>`;
+           }
+
+
+           html = code.split('\n').map(parseLine).join('\n');
+
+
+           return { html, styles, scripts };
+       }
+
+
+       function openPreview() {
+           saveCurrentFile();
+           const parsed = parsePlaintext(editor.value);
+           const docContent = `
+       <!DOCTYPE html>
+       <html>
+       <head></head>
+       <body>${parsed.html}</body>
+       </html>
+     `;
+
+
+           preview.srcdoc = docContent;
+
+
+           preview.onload = () => {
+               const doc = preview.contentDocument;
+
+
+               parsed.styles.forEach(css => {
+                   const style = doc.createElement('style');
+                   style.textContent = css;
+                   doc.head.appendChild(style);
+               });
+
+
+               parsed.scripts.forEach(js => {
+                   const script = doc.createElement('script');
+                   script.textContent = js;
+                   doc.body.appendChild(script);
+               });
+           };
+
+
+           previewContainer.style.display = 'flex';
+       }
+
+
+       function closePreview() {
+           previewContainer.style.display = 'none';
+       }
+
+
+       editor.addEventListener('keydown', (event) => {
+           const map = { '(': ')', '{': '}', '[': ']' };
+           if (map[event.key]) {
+               event.preventDefault();
+               const start = editor.selectionStart;
+               const end = editor.selectionEnd;
+               editor.setRangeText(event.key + map[event.key], start, end, 'end');
+               editor.selectionStart = editor.selectionEnd = start + 1;
+           }
+       });
+
+
+       editor.addEventListener('input', saveCurrentFile);
+
+
+       window.onload = function () {
+           if (files.length === 0) {
+               createNewFile();
+           } else {
+               currentFileIndex = 0;
+               const file = files[0];
+               currentFileName.textContent = file.name;
+               editor.value = file.content;
+               renderFileList();
+           }
+           previewContainer.style.display = 'none';
+       };
+   </script>
+</body>
+
+
+</html>
