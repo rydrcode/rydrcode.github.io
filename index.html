@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RydrCode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #ff365e;
+      --bg: #0e0e12;
+      --card: #1a1a23;
+      --text: #f5f5f7;
+      --soft-text: #a0a0b3;
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background: var(--card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    nav h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      color: var(--accent);
+    }
+
+    nav button {
+      background: none;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .center-box {
+      background: var(--card);
+      padding: 3rem;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .center-box h2 {
+      font-size: 2.4rem;
+      margin-bottom: 2rem;
+      color: #fff;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-main {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-main:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--soft-text);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>RydrCode</h1>
+    <div>
+      <button onclick="location.href='dashboard.html'">View Dashboards</button>
+      <button onclick="location.href='index.html'">Home</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="center-box">
+      <h2>Welcome to RydrCode</h2>
+      <div class="btn-row">
+        <button class="btn-main" onclick="location.href='create.html'">Create My Dash</button>
+        <button class="btn-main" onclick="location.href='about.html'">What is RydrCode</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 RydrCode. All rights reserved.
+  </footer>
+</body>
+</html>
