@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Dashboard - RydrCode</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&family=Roboto&family=Montserrat&family=Lobster&family=Courier+Prime&family=Fira+Code&family=Source+Sans+Pro&family=Raleway&display=swap" rel="stylesheet">
   <style>
     :root {
       --accent: #ff365e;
@@ -21,13 +21,11 @@
       box-sizing: border-box;
     }
 
-    body {
+    body, html {
+      height: 100%;
       background: var(--bg);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
     nav {
@@ -61,62 +59,68 @@
       color: #fff;
     }
 
-    main {
-      flex: 1;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: auto;
+    .dashboard-container {
+      display: flex;
+      height: calc(100vh - 70px);
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--card);
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      border-left: 2px solid var(--accent);
     }
 
-    .toolbox {
-      background: var(--card);
-      padding: 1.5rem;
-      border-radius: var(--radius);
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-
-    .toolbox h2 {
+    .sidebar h2 {
+      font-size: 1.2rem;
       margin-bottom: 1rem;
-      font-size: 1.5rem;
-      color: var(--accent);
     }
 
-    .toolbox button {
+    .sidebar .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar button, .sidebar select {
       background: var(--accent);
       border: none;
-      color: #fff;
-      padding: 0.6rem 1.5rem;
-      margin: 0.5rem;
+      color: white;
+      padding: 0.5rem 0.8rem;
       border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.3s;
       font-weight: bold;
+      margin-bottom: 0.5rem;
     }
 
-    .toolbox button:hover {
-      background: #ff5570;
+    .sidebar select {
+      background: var(--card);
+      border: 1px solid var(--soft-text);
+      color: var(--text);
+      width: 100%;
+      padding: 0.5rem;
     }
 
-    #dashboard-area {
-      background: #13131a;
-      border: 2px dashed var(--soft-text);
+    .preview {
+      flex: 1;
       padding: 2rem;
-      border-radius: var(--radius);
-      min-height: 300px;
-      color: var(--soft-text);
+      overflow: auto;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      flex-wrap: wrap;
+      align-content: flex-start;
       gap: 1rem;
-      transition: border 0.3s;
+      position: relative;
     }
 
-    #dashboard-area:focus-within {
-      border: 2px dashed var(--accent);
+    .element {
+      padding: 1rem;
+      background: #1f1f2b;
+      border: 1px dashed var(--soft-text);
+      border-radius: var(--radius);
+      cursor: move;
+      position: relative;
     }
 
     footer {
@@ -136,66 +140,107 @@
     </div>
   </nav>
 
-  <main>
-    <div class="toolbox">
-      <h2>Dashboard Tools</h2>
+  <div class="dashboard-container">
+    <div class="preview" id="dashboard-area"></div>
+
+    <div class="sidebar">
+      <h2 id="dash-name">Untitled Dash</h2>
+      <div class="actions">
+        <button onclick="saveDash()">Save</button>
+        <button onclick="renameDash()">Rename</button>
+      </div>
       <button onclick="addElement('clock')">Add Clock</button>
-      <button onclick="addElement('font')">Change Font</button>
       <button onclick="addElement('link-button')">Add Link Button</button>
       <button onclick="addElement('html')">Insert HTML</button>
+      <label for="font-select">Font:</label>
+      <select id="font-select" onchange="changeFont(this.value)">
+        <option value="Inter">Inter</option>
+        <option value="Orbitron">Orbitron</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Lobster">Lobster</option>
+        <option value="Courier Prime">Courier Prime</option>
+        <option value="Fira Code">Fira Code</option>
+        <option value="Source Sans Pro">Source Sans Pro</option>
+        <option value="Raleway">Raleway</option>
+      </select>
     </div>
-
-    <div id="dashboard-area">
-      <p>Your custom dashboard preview will appear here.</p>
-    </div>
-  </main>
+  </div>
 
   <footer>
     &copy; 2025 RydrCode. All rights reserved.
   </footer>
 
   <script>
+    let dashName = 'Untitled Dash';
+
+    function renameDash() {
+      const newName = prompt("Enter new dashboard name:", dashName);
+      if (newName) {
+        dashName = newName;
+        document.getElementById("dash-name").innerText = dashName;
+      }
+    }
+
+    function saveDash() {
+      alert(`Dashboard "${dashName}" saved!`);
+      location.href = 'https://rydrcode.github.io/dashboard.html';
+    }
+
     function addElement(type) {
       const area = document.getElementById('dashboard-area');
-      let el;
+      let el = document.createElement('div');
+      el.className = 'element';
 
       switch (type) {
         case 'clock':
-          el = document.createElement('div');
           el.innerText = new Date().toLocaleTimeString();
-          el.style.fontSize = '2rem';
-          el.style.color = 'white';
           setInterval(() => {
             el.innerText = new Date().toLocaleTimeString();
           }, 1000);
           break;
-        case 'font':
-          document.body.style.fontFamily = 'Orbitron, sans-serif';
-          return;
         case 'link-button':
-          el = document.createElement('button');
-          const url = prompt('Enter a URL:');
-          const label = prompt('Enter button text:');
-          el.innerText = label || 'Visit';
-          el.onclick = () => window.open(url, '_blank');
-          el.style.padding = '0.5rem 1rem';
-          el.style.margin = '0.5rem';
-          el.style.borderRadius = '12px';
-          el.style.border = 'none';
-          el.style.backgroundColor = '#ff365e';
-          el.style.color = '#fff';
+          const url = prompt('Enter URL:');
+          const label = prompt('Enter button label:');
+          el.innerHTML = `<button onclick="window.open('${url}', '_blank')" style="padding: 0.5rem 1rem; background: var(--accent); color: #fff; border: none; border-radius: 12px;">${label}</button>`;
           break;
         case 'html':
-          const html = prompt('Enter your HTML code:');
-          el = document.createElement('div');
+          const html = prompt('Enter HTML code:');
           el.innerHTML = html;
           break;
       }
 
-      if (el) {
-        area.appendChild(el);
-      }
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', dragStart);
+      el.addEventListener('dragend', dragEnd);
+      area.appendChild(el);
     }
+
+    function changeFont(font) {
+      document.getElementById('dashboard-area').style.fontFamily = font;
+    }
+
+    let dragged;
+
+    function dragStart(e) {
+      dragged = e.target;
+      e.target.style.opacity = 0.5;
+    }
+
+    function dragEnd(e) {
+      e.target.style.opacity = "";
+    }
+
+    document.getElementById("dashboard-area").addEventListener("dragover", function(e) {
+      e.preventDefault();
+    });
+
+    document.getElementById("dashboard-area").addEventListener("drop", function(e) {
+      e.preventDefault();
+      if (dragged && e.target.classList.contains("preview")) {
+        e.target.appendChild(dragged);
+      }
+    });
   </script>
 </body>
 </html>
