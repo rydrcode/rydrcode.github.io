@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Dashboard - RydrCode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #ff365e;
+      --bg: #0e0e12;
+      --card: #1a1a23;
+      --text: #f5f5f7;
+      --soft-text: #a0a0b3;
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background: var(--card);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    nav h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      color: var(--accent);
+    }
+
+    nav button {
+      background: none;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    nav button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .toolbox {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .toolbox h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .toolbox button {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 0.6rem 1.5rem;
+      margin: 0.5rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: bold;
+    }
+
+    .toolbox button:hover {
+      background: #ff5570;
+    }
+
+    #dashboard-area {
+      background: #13131a;
+      border: 2px dashed var(--soft-text);
+      padding: 2rem;
+      border-radius: var(--radius);
+      min-height: 300px;
+      color: var(--soft-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: border 0.3s;
+    }
+
+    #dashboard-area:focus-within {
+      border: 2px dashed var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--soft-text);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>RydrCode</h1>
+    <div>
+      <button onclick="location.href='dashboard.html'">View Dashboards</button>
+      <button onclick="location.href='index.html'">Home</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="toolbox">
+      <h2>Dashboard Tools</h2>
+      <button onclick="addElement('clock')">Add Clock</button>
+      <button onclick="addElement('font')">Change Font</button>
+      <button onclick="addElement('link-button')">Add Link Button</button>
+      <button onclick="addElement('html')">Insert HTML</button>
+    </div>
+
+    <div id="dashboard-area">
+      <p>Your custom dashboard preview will appear here.</p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 RydrCode. All rights reserved.
+  </footer>
+
+  <script>
+    function addElement(type) {
+      const area = document.getElementById('dashboard-area');
+      let el;
+
+      switch (type) {
+        case 'clock':
+          el = document.createElement('div');
+          el.innerText = new Date().toLocaleTimeString();
+          el.style.fontSize = '2rem';
+          el.style.color = 'white';
+          setInterval(() => {
+            el.innerText = new Date().toLocaleTimeString();
+          }, 1000);
+          break;
+        case 'font':
+          document.body.style.fontFamily = 'Orbitron, sans-serif';
+          return;
+        case 'link-button':
+          el = document.createElement('button');
+          const url = prompt('Enter a URL:');
+          const label = prompt('Enter button text:');
+          el.innerText = label || 'Visit';
+          el.onclick = () => window.open(url, '_blank');
+          el.style.padding = '0.5rem 1rem';
+          el.style.margin = '0.5rem';
+          el.style.borderRadius = '12px';
+          el.style.border = 'none';
+          el.style.backgroundColor = '#ff365e';
+          el.style.color = '#fff';
+          break;
+        case 'html':
+          const html = prompt('Enter your HTML code:');
+          el = document.createElement('div');
+          el.innerHTML = html;
+          break;
+      }
+
+      if (el) {
+        area.appendChild(el);
+      }
+    }
+  </script>
+</body>
+</html>
